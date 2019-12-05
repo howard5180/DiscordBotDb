@@ -15,6 +15,10 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
+@bot.command()
+async def hi(ctx):
+    await ctx.send("Hi")
+
 @bot.command(aliases=["behemoth","bhm"])
 async def behe(ctx, *a):
     i = 0
