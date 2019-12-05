@@ -7,12 +7,14 @@ import collections
 import os
 
 #connection to sql
-connection = pymysql.connect(host=os.environ["DB_HOSTNAME"],
-                             user=os.environ["DB_USERNAME"],
-                             password=os.environ["DB_PASSWORD"],
-                             db=os.environ["DB_NAME"],
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
+def getconn():
+    connection = pymysql.connect(host=os.environ["DB_HOSTNAME"],
+                                user=os.environ["DB_USERNAME"],
+                                password=os.environ["DB_PASSWORD"],
+                                db=os.environ["DB_NAME"],
+                                charset='utf8mb4',
+                                cursorclass=pymysql.cursors.DictCursor)
+    return connection
 
 #all the sql execution
 def getElementLink(stringInput):
@@ -229,6 +231,7 @@ def isExactMatch(behemothArray, inputString):
 
 def fetchBehemothDB(name):
     try:
+        connection = getconn()
         cursor = connection.cursor()
         sql = f"SELECT B.Name AS BeheName, B.Element as BeheElement, W.Type AS WepType, W.Tier AS WepTier, W.Ability AS WepAbility, A.Ability AS ArmourAbility FROM behemothtable AS B INNER JOIN weapontable AS W ON W.IdWeapon = B.IdWeapon_BehemothTable INNER JOIN armourtable AS A ON A.IdBehemoth_ArmourTable = B.IdBehemoth WHERE B.name_clean LIKE '%{name}%' GROUP BY B.IdBehemoth"
         cursor.execute(sql) 
@@ -240,6 +243,7 @@ def fetchBehemothDB(name):
 
 def fetchWeaponDB(name):
     try:
+        connection = getconn()
         cursor = connection.cursor()
         sql = f"SELECT behemothtable.Name, behemothtable.Element, weapontable.Type, weapontable.Tier, weapontable.PhysAttack, weapontable.ElemAttack, weapontable.Ability, weapontable.Obs FROM behemothtable INNER JOIN weapontable ON weapontable.IdWeapon = behemothtable.IdWeapon_BehemothTable WHERE behemothtable.name_clean LIKE '%{name}%'"
         cursor.execute(sql)
@@ -250,6 +254,7 @@ def fetchWeaponDB(name):
 
 def fetchArmorDB(name):
     try:
+        connection = getconn()
         cursor = connection.cursor()
         sql = f"SELECT behemothtable.Name AS BeheName, behemothtable.Element AS BeheElement, armourtable.DefElement AS ArmorElement, armourtable.HpValue AS ArmorHP, armourtable.PhysDef AS ArmorPDef, armourtable.ElemDef AS ArmorEDef, armourtable.PhysAttack AS ArmorPAtk, armourtypelist.Name AS ArmorType, armourtable.Ability AS ArmorAbility, armourtable.Obs AS ArmorObs FROM behemothtable LEFT JOIN armourtable ON armourtable.IdBehemoth_ArmourTable = behemothtable.IdBehemoth LEFT JOIN armourtypelist ON armourtypelist.IdArmourTypeList = armourtable.IdArmourtype_ArmourTable WHERE behemothtable.name_clean LIKE '%{name}%'"
         cursor.execute(sql) 
@@ -260,6 +265,7 @@ def fetchArmorDB(name):
 
 def fetchMagiDB(name):
     try:
+        connection = getconn()
         cursor = connection.cursor()
         sql = f"SELECT magitable.Name, magitable.Cooldown, magitable.HealAmount, magitable.Description, magitable.Obs, magitypelist.Name FROM magitable INNER JOIN magitypelist ON magitypelist.IdMagiType = magitable.IdMagiType_MagiTable WHERE magitable.name_clean LIKE '%{name}%'"
         cursor.execute(sql) #this returns the amount of rows affected.
@@ -270,6 +276,7 @@ def fetchMagiDB(name):
 
 def fetchIconLinkDB(beheName, default):
     try:
+        connection = getconn()
         cursor = connection.cursor()
         sql = f"(SELECT imageLink FROM icontable WHERE behemothName = '{beheName}') UNION (SELECT imageLink FROM icontable WHERE behemothName = '{default}') LIMIT 1"
         cursor.execute(sql) 
@@ -280,6 +287,7 @@ def fetchIconLinkDB(beheName, default):
 
 def fetchBehemothByTypeDB(attributesArray):
     try:
+        connection = getconn()
         cursor = connection.cursor()
         sql = f"SELECT B.Name AS BeheName, B.Element as BeheElement, W.Type AS WepType, W.Tier AS WepTier, W.Ability AS WepAbility, A.Ability AS ArmourAbility FROM behemothtable AS B INNER JOIN weapontable AS W ON W.IdWeapon = B.IdWeapon_BehemothTable INNER JOIN armourtable AS A ON A.IdBehemoth_ArmourTable = B.IdBehemoth WHERE W.Type LIKE '%{attributesArray['Class']}%' AND W.Tier LIKE '%{attributesArray['Type']}%' "
         
