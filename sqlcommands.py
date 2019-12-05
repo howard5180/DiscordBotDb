@@ -229,68 +229,68 @@ def isExactMatch(behemothArray, inputString):
 
 def fetchBehemothDB(name):
     try:
-        with connection.cursor() as cursor:
-            sql = f"SELECT B.Name AS BeheName, B.Element as BeheElement, W.Type AS WepType, W.Tier AS WepTier, W.Ability AS WepAbility, A.Ability AS ArmourAbility FROM behemothtable AS B INNER JOIN weapontable AS W ON W.IdWeapon = B.IdWeapon_BehemothTable INNER JOIN armourtable AS A ON A.IdBehemoth_ArmourTable = B.IdBehemoth WHERE B.name_clean LIKE '%{name}%' GROUP BY B.IdBehemoth"
-            cursor.execute(sql) 
-            result = cursor.fetchall()
+        cursor = connection.cursor()
+        sql = f"SELECT B.Name AS BeheName, B.Element as BeheElement, W.Type AS WepType, W.Tier AS WepTier, W.Ability AS WepAbility, A.Ability AS ArmourAbility FROM behemothtable AS B INNER JOIN weapontable AS W ON W.IdWeapon = B.IdWeapon_BehemothTable INNER JOIN armourtable AS A ON A.IdBehemoth_ArmourTable = B.IdBehemoth WHERE B.name_clean LIKE '%{name}%' GROUP BY B.IdBehemoth"
+        cursor.execute(sql) 
+        result = cursor.fetchall()
 
-            return result
+        return result
     finally:
         connection.close()
 
 def fetchWeaponDB(name):
     try:
-        with connection.cursor() as cursor:
-            sql = f"SELECT behemothtable.Name, behemothtable.Element, weapontable.Type, weapontable.Tier, weapontable.PhysAttack, weapontable.ElemAttack, weapontable.Ability, weapontable.Obs FROM behemothtable INNER JOIN weapontable ON weapontable.IdWeapon = behemothtable.IdWeapon_BehemothTable WHERE behemothtable.name_clean LIKE '%{name}%'"
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            return result
+        cursor = connection.cursor()
+        sql = f"SELECT behemothtable.Name, behemothtable.Element, weapontable.Type, weapontable.Tier, weapontable.PhysAttack, weapontable.ElemAttack, weapontable.Ability, weapontable.Obs FROM behemothtable INNER JOIN weapontable ON weapontable.IdWeapon = behemothtable.IdWeapon_BehemothTable WHERE behemothtable.name_clean LIKE '%{name}%'"
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
     finally:
         connection.close()
 
 def fetchArmorDB(name):
     try:
-        with connection.cursor() as cursor:
-            sql = f"SELECT behemothtable.Name AS BeheName, behemothtable.Element AS BeheElement, armourtable.DefElement AS ArmorElement, armourtable.HpValue AS ArmorHP, armourtable.PhysDef AS ArmorPDef, armourtable.ElemDef AS ArmorEDef, armourtable.PhysAttack AS ArmorPAtk, armourtypelist.Name AS ArmorType, armourtable.Ability AS ArmorAbility, armourtable.Obs AS ArmorObs FROM behemothtable LEFT JOIN armourtable ON armourtable.IdBehemoth_ArmourTable = behemothtable.IdBehemoth LEFT JOIN armourtypelist ON armourtypelist.IdArmourTypeList = armourtable.IdArmourtype_ArmourTable WHERE behemothtable.name_clean LIKE '%{name}%'"
-            cursor.execute(sql) 
-            result = cursor.fetchall()
-            return result
+        cursor = connection.cursor()
+        sql = f"SELECT behemothtable.Name AS BeheName, behemothtable.Element AS BeheElement, armourtable.DefElement AS ArmorElement, armourtable.HpValue AS ArmorHP, armourtable.PhysDef AS ArmorPDef, armourtable.ElemDef AS ArmorEDef, armourtable.PhysAttack AS ArmorPAtk, armourtypelist.Name AS ArmorType, armourtable.Ability AS ArmorAbility, armourtable.Obs AS ArmorObs FROM behemothtable LEFT JOIN armourtable ON armourtable.IdBehemoth_ArmourTable = behemothtable.IdBehemoth LEFT JOIN armourtypelist ON armourtypelist.IdArmourTypeList = armourtable.IdArmourtype_ArmourTable WHERE behemothtable.name_clean LIKE '%{name}%'"
+        cursor.execute(sql) 
+        result = cursor.fetchall()
+        return result
     finally:
         connection.close()
 
 def fetchMagiDB(name):
     try:
-        with connection.cursor() as cursor:
-            sql = f"SELECT magitable.Name, magitable.Cooldown, magitable.HealAmount, magitable.Description, magitable.Obs, magitypelist.Name FROM magitable INNER JOIN magitypelist ON magitypelist.IdMagiType = magitable.IdMagiType_MagiTable WHERE magitable.name_clean LIKE '%{name}%'"
-            cursor.execute(sql) #this returns the amount of rows affected.
-            result = cursor.fetchall()
-            return result
+        cursor = connection.cursor()
+        sql = f"SELECT magitable.Name, magitable.Cooldown, magitable.HealAmount, magitable.Description, magitable.Obs, magitypelist.Name FROM magitable INNER JOIN magitypelist ON magitypelist.IdMagiType = magitable.IdMagiType_MagiTable WHERE magitable.name_clean LIKE '%{name}%'"
+        cursor.execute(sql) #this returns the amount of rows affected.
+        result = cursor.fetchall()
+        return result
     finally:
         connection.close()
 
 def fetchIconLinkDB(beheName, default):
     try:
-        with connection.cursor() as cursor:
-            sql = f"(SELECT imageLink FROM icontable WHERE behemothName = '{beheName}') UNION (SELECT imageLink FROM icontable WHERE behemothName = '{default}') LIMIT 1"
-            cursor.execute(sql) 
-            result = cursor.fetchall()
-            return result[0]['imageLink']
+        cursor = connection.cursor()
+        sql = f"(SELECT imageLink FROM icontable WHERE behemothName = '{beheName}') UNION (SELECT imageLink FROM icontable WHERE behemothName = '{default}') LIMIT 1"
+        cursor.execute(sql) 
+        result = cursor.fetchall()
+        return result[0]['imageLink']
     finally:
         connection.close()
 
 def fetchBehemothByTypeDB(attributesArray):
     try:
-        with connection.cursor() as cursor:
-            sql = f"SELECT B.Name AS BeheName, B.Element as BeheElement, W.Type AS WepType, W.Tier AS WepTier, W.Ability AS WepAbility, A.Ability AS ArmourAbility FROM behemothtable AS B INNER JOIN weapontable AS W ON W.IdWeapon = B.IdWeapon_BehemothTable INNER JOIN armourtable AS A ON A.IdBehemoth_ArmourTable = B.IdBehemoth WHERE W.Type LIKE '%{attributesArray['Class']}%' AND W.Tier LIKE '%{attributesArray['Type']}%' "
-            
-            if (attributesArray['Element']):
-                sql += f"AND B.Element = '{attributesArray['Element']}' GROUP BY B.IdBehemoth"
-            else: 
-                sql += f"AND B.Element LIKE '%%' GROUP BY B.IdBehemoth"
+        cursor = connection.cursor()
+        sql = f"SELECT B.Name AS BeheName, B.Element as BeheElement, W.Type AS WepType, W.Tier AS WepTier, W.Ability AS WepAbility, A.Ability AS ArmourAbility FROM behemothtable AS B INNER JOIN weapontable AS W ON W.IdWeapon = B.IdWeapon_BehemothTable INNER JOIN armourtable AS A ON A.IdBehemoth_ArmourTable = B.IdBehemoth WHERE W.Type LIKE '%{attributesArray['Class']}%' AND W.Tier LIKE '%{attributesArray['Type']}%' "
+        
+        if (attributesArray['Element']):
+            sql += f"AND B.Element = '{attributesArray['Element']}' GROUP BY B.IdBehemoth"
+        else: 
+            sql += f"AND B.Element LIKE '%%' GROUP BY B.IdBehemoth"
 
-            cursor.execute(sql)
-            result = cursor.fetchall()
-            return result
+        cursor.execute(sql)
+        result = cursor.fetchall()
+        return result
     finally:
         connection.close()
 
